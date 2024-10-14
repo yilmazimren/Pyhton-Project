@@ -1,0 +1,73 @@
+import sklearn
+import tabulate
+import numpy as np
+import pandas as pd
+import seaborn as sns
+import matplotlib.pyplot as plt
+from sklearn.model_selection import cross_val_score
+from sklearn.model_selection import train_test_split
+from sklearn.metrics import classification_report, precision_score, recall_score, f1_score, accuracy_score, confusion_matrix
+from sklearn.tree import DecisionTreeClassifier
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.linear_model import LogisticRegression
+from sklearn.preprocessing import MinMaxScaler
+from sklearn import tree
+from sklearn.datasets import load_breast_cancer
+from tabulate import tabulate
+from sklearn import svm
+x, y = np.shape(df)
+X = df.iloc[:, 0:y-1]
+y = df.iloc[:, 30]
+
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.5, random_state=12)
+DTclf = DecisionTreeClassifier(criterion='entropy', max_depth=10, random_state=19)
+DTclf.fit(X_train, y_train)
+DTpred= DTclf.predict(X_test)
+DTacc = accuracy_score(y_test, DTpred)
+DTpr = precision_score(y_test, DTpred, average='weighted')
+DTrc = recall_score(y_test, DTpred, average='weighted')
+DTf1 = f1_score(y_test, DTpred, average='weighted')
+
+DTdata = [["DT.Accuracy", DTacc],
+        ["DT.Precision", DTpr],
+        ["DT.F1-Score", DTf1]]
+col_names = ["Performance", "Score"]
+
+print(tabulate(DTdata, headers=col_names))
+
+RFclf = RandomForestClassifier(criterion='entropy', max_depth=10, random_state=42)
+RFclf.fit(X_train, y_train)
+RFpred= RFclf.predict(X_test)
+RFacc = accuracy_score(y_test, RFpred)
+RFpr = precision_score(y_test, RFpred, average='weighted')
+RFrc = recall_score(y_test, RFpred, average='weighted')
+RFf1 = f1_score(y_test, RFpred, average='weighted')
+
+RFdata = [["RF.Accuracy", RFacc],
+        ["RF.Precision", RFpr],
+        ["RF.F1-Score", RFf1]]
+col_names = ["Performance", "Score"]
+print("*************************************")
+print(tabulate(RFdata, headers=col_names))
+
+LRclf = LogisticRegression(random_state=0,max_iter=1000000)
+LRclf.fit(X_train, y_train)
+LRpred = LRclf.predict(X_test)
+
+SVclf = svm.LinearSVC()
+SVclf.fit(X_train, y_train)
+ypred = SVclf.predict(X_test)
+print(classification_report(y_test, ypred))
+SVclf = svm.SVC(kernel="poly")
+SVclf.fit(X_train, y_train)
+SVpred = SVclf.predict(X_test)
+
+print("******************Classification Reports*************************")
+print("******************Desicion Tree*************************")
+print(classification_report(y_test, DTpred))
+print("******************Random Forest*************************")
+print(classification_report(y_test, RFpred))
+print("******************Lojistik Regresyon*************************")
+print(classification_report(y_test, LRpred))
+print("******************Destek Vektör Makineleri*************************")
+print(classification_report(y_test, SVpred))
